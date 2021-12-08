@@ -13,6 +13,11 @@ addons:
   ssh_known_hosts:
     - 49.235.118.244
 
+env:
+  global:
+    - IMAGE_NAME=nymrli/sucsoft-inititializer-front
+    - IMAGE_TAG=latest
+
 before_script:
   - docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
   # 把项目下的deploy_rsa.enc加密文件，解密输出到/tmp/deploy_rsa中
@@ -28,11 +33,12 @@ script:
   - yarn build
 
 after_success:
-  - docker build -t nymrli/sucsoft-inititializer-front .
-  - docker push nymrli/sucsoft-inititializer-front
+  - docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .
+  - docker push ${IMAGE_NAME}:${IMAGE_TAG}
+  # 删除已有镜像并删除
+  - ssh mrli@49.235.118.244 -o stricthostkeychecking=no "echo ${IMAGE_TAG};docker rmi $(docker images | grep "nymrli/sucsoft-inititializer-front" | awk '{if($2~/^$${IMAGE_TAG}$/)print $3}')
+;docker run -d --name cgf -p 3000:80 ${IMAGE_NAME}"
   - echo "success!"
+  
 services:
   - docker
-
-after_success:
-  - ssh mrli@49.235.118.244 -o stricthostkeychecking=no "docker run --name cgf -p 3000:80 nymrli/sucsoft-inititializer-front"
