@@ -36,8 +36,7 @@ after_success:
   - docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .
   - docker push ${IMAGE_NAME}:${IMAGE_TAG}
   # 停止和删除已有容器，删除已有镜像并运行新镜像
-  - ssh mrli@49.235.118.244 -o stricthostkeychecking=no "echo ${IMAGE_TAG};docker rmi $(docker images | grep "nymrli/sucsoft-inititializer-front" | awk '{if($2~/^$${IMAGE_TAG}$/)print $3}')
-;docker run -d --name cgf -p 3000:80 ${IMAGE_NAME}"
+  - ssh mrli@49.235.118.244 -o stricthostkeychecking=no echo ${IMAGE_TAG};docker rmi $(docker images | grep "nymrli/sucsoft-inititializer-front" | awk '{if($2~/^$${IMAGE_TAG}$/)print $3}');docker run -d --name cgf -p 3000:80 ${IMAGE_NAME}
   - echo "success!"
   
 services:
