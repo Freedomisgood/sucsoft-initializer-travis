@@ -1,0 +1,41 @@
+language: node_js
+node_js:
+  - "lts/*"
+  
+branches:
+  only:
+    - main
+    - master
+
+install:
+  - npm install yarn
+
+before_script:
+  - docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
+  
+script:
+  - yarn build
+  
+# 不指定tag, 默认为latest
+after_success:
+  - docker build -t nymrli/sucsoft-inititializer-front .
+  - docker push nymrli/sucsoft-inititializer-front
+  - echo "success!"
+
+services:
+  - docker
+
+
+# 指定要登陆的服务器
+addons:
+  ssh_known_hosts:
+  - 39.106.230.88
+
+notifications:
+  email:
+  - gongsir0630@gmail.com
+
+# passed: git push成功
+# Broken: git push失败
+# still failed: amend失败
+# fixed: amend成功
